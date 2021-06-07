@@ -1,0 +1,82 @@
+AWSTemplateFormatVersion: 2010-09-09
+Description: >-
+  crud-person-ts-api-serverless
+
+Transform:
+- AWS::Serverless-2016-10-31
+
+Resources:
+  getByIdFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: dist/
+      Handler: src/main/handlers/load-person-by-id/load-person-by-id-handler.handler
+      Runtime: nodejs12.x
+      MemorySize: 128
+      Timeout: 100
+      Description: HTTP get method to get one item by id from a DynamoDB table.
+      Policies:
+        - DynamoDBCrudPolicy:
+            TableName: !Ref PersonsTable
+      Environment:
+        Variables:
+          PERSONS_TABLE: !Ref PersonsTable
+      Events:
+        Api:
+          Type: Api
+          Properties:
+            Path: /persons/{id}
+            Method: GET
+  # Each Lambda function is defined by properties:
+  # https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
+
+  # This is a Lambda function config associated with the source code: put-item.js
+  #putItemFunction:
+  #  Type: AWS::Serverless::Function
+  #  Metadata:
+  #    BuildMethod: makefile
+  #  Properties:
+  #    CodeUri: app/
+  #    Handler: dist/src/handlers/post.handler
+  #    Runtime: nodejs12.x
+  #    MemorySize: 128
+  #    Timeout: 100
+  #    Description: A simple example includes a HTTP post method to add one item to a DynamoDB table.
+  #    Policies:
+  #      # Give Create/Read/Update/Delete Permissions to the SampleTable
+  #      - DynamoDBCrudPolicy:
+  #          TableName: !Ref SampleTable
+  #    Environment:
+  #      Variables:
+          # Make table name accessible as environment variable from function code during execution
+          SAMPLE_TABLE: !Ref SampleTable
+      Events:
+        Api:
+          Type: Api
+          Properties:
+            Path: /
+            Method: POST
+        #Stream:
+        #  Type: DynamoDB
+        #  Properties:
+        #    Stream: !GetAtt SampleTable.StreamArn
+        #    BatchSize: 5
+        #    StartingPosition: TRIM_HORIZON
+  # Simple syntax to create a DynamoDB table with a single attribute primary key, more in
+  # https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlesssimpletable
+
+  # DynamoDB table to store item: {id: &lt;ID&gt;, name: &lt;NAME&gt;}
+  PersonsTable:
+    Type: AWS::Serverless::SimpleTable
+    Properties:
+      PrimaryKey:
+        Name: id
+        Type: String
+      ProvisionedThroughput:
+        ReadCapacityUnits: 2
+        WriteCapacityUnits: 2
+
+Outputs:
+  WebEndpoint:
+    Description: "API Gateway endpoint URL for Prod stage"
+    Value: !Sub "https://${ServerlessRestApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/"
