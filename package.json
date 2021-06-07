@@ -1,10 +1,11 @@
 {
-  "name": "crud-person-ts-api",
+  "name": "crud-person-ts-api-serverless",
   "version": "4.1.1",
   "description": "",
   "main": "index.js",
   "scripts": {
     "start": "node dist/src/main/server.js",
+    "start:sam": "npm run build && sam local start-api",
     "build": "rimraf dist && tsc",
     "dev": "npm run build && npm start",
     "db:up": "cd src/infra/db/mongodb/mongo-migrations && migrate-mongo up",
@@ -37,6 +38,7 @@
     "typescript": "^4.2.4"
   },
   "dependencies": {
+    "aws-sdk": "^2.923.0",
     "cpf-cnpj-validator": "^1.0.3",
     "express": "^4.17.1",
     "express-actuator": "^1.7.0",
