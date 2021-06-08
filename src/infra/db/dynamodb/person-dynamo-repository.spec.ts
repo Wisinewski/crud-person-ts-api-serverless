@@ -15,8 +15,8 @@ const makeSut = (): SutTypes => {
 describe('loadById', () => {
   test('should return a person on loadById success', async () => {
     const { personDynamoRepositorySpy } = makeSut()
-    const personParams = mockAddPersonParams()
     personDynamoRepositorySpy.result = mockPersonModel()
+    const personParams = mockAddPersonParams()
     const person = await personDynamoRepositorySpy.loadById(personParams.id)
     expect(person).toBeTruthy()
     expect(person.id).toBeTruthy()
@@ -29,5 +29,13 @@ describe('loadById', () => {
     expect(person.cidadeNascimento).toBe(personParams.cidadeNascimento)
     expect(person.nomeMae).toBe(personParams.nomeMae)
     expect(person.nomePai).toBe(personParams.nomePai)
+  });
+
+  test('should return null if loadByCpf fails', async () => {
+    const { personDynamoRepositorySpy } = makeSut()
+    personDynamoRepositorySpy.result = null
+    const personParams = mockAddPersonParams()
+    const person = await personDynamoRepositorySpy.loadById(personParams.id)
+    expect(person).toBeFalsy()
   });
 });
