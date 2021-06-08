@@ -1,6 +1,6 @@
 import { PersonModel } from './../models/person';
 
-export type AddPersonParams = Omit<PersonModel, 'id'>
+export type AddPersonParams = PersonModel
 
 export interface AddPerson {
   add: (person: AddPersonParams) => Promise<PersonModel>

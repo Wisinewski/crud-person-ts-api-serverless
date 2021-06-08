@@ -48,14 +48,14 @@ Resources:
   #          TableName: !Ref SampleTable
   #    Environment:
   #      Variables:
-          # Make table name accessible as environment variable from function code during execution
-          SAMPLE_TABLE: !Ref SampleTable
-      Events:
-        Api:
-          Type: Api
-          Properties:
-            Path: /
-            Method: POST
+  #        # Make table name accessible as environment variable from function code during execution
+  #        SAMPLE_TABLE: !Ref SampleTable
+  #    Events:
+  #      Api:
+  #        Type: Api
+  #        Properties:
+  #          Path: /
+  #          Method: POST
         #Stream:
         #  Type: DynamoDB
         #  Properties:

@@ -4,6 +4,7 @@ import { PersonModel } from './../models/person';
 import { AddPersonParams } from './../usecases/add-person';
 
 export const mockAddPersonParams = (): AddPersonParams => ({
+  id: 'any_id',
   nome: 'any_nome',
   cpf: 'any_cpf',
   dataNascimento: new Date('2021-01-01'),
