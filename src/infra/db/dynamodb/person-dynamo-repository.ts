@@ -1,3 +1,5 @@
+import { UpdatePersonParams } from './../../../domain/usecases/update-person-by-id';
+import { UpdatePersonByIdRepository } from './../../../data/protocols/db/update-person-by-id-repository';
 import { DeletePersonByIdRepository } from './../../../data/protocols/db/delete-person-by-id-repository';
 import { AddPersonParams } from './../../../domain/usecases/add-person';
 import { AddPersonRepository } from './../../../data/protocols/db/add-person-repository';
@@ -5,7 +7,7 @@ import { PersonModel } from './../../../domain/models/person';
 import { LoadPersonByIdRepository } from './../../../data/protocols/db/load-person-by-id-repository';
 import { DynamoDB } from 'aws-sdk';
 
-export class PersonDynamoRepository implements LoadPersonByIdRepository, AddPersonRepository, DeletePersonByIdRepository {
+export class PersonDynamoRepository implements LoadPersonByIdRepository, AddPersonRepository, DeletePersonByIdRepository, UpdatePersonByIdRepository {
   constructor (
     private readonly table: string,
     private readonly docClient: DynamoDB.DocumentClient = new DynamoDB.DocumentClient()
@@ -42,5 +44,34 @@ export class PersonDynamoRepository implements LoadPersonByIdRepository, AddPers
     }
     const result: DynamoDB.DocumentClient.DeleteItemOutput = await this.docClient.delete(params).promise()
     return !!result.Attributes
+  }
+
+  async updateById (personData: UpdatePersonParams): Promise<PersonModel> {
+    const params: DynamoDB.DocumentClient.UpdateItemInput = {
+      TableName: this.table,
+      Key: { id: personData.id },
+      UpdateExpression:
+        'set nome = :nome, ' + 
+        'dataNascimento = :dataNascimento, ' +
+        'paisNascimento = :paisNascimento, ' +
+        'estadoNascimento = :estadoNascimento, ' +
+        'cidadeNascimento = :cidadeNascimento, ' +
+        'email = :email, ' +
+        'nomePai = :nomePai, ' +
+        'nomeMae = :nomeMae', 
+      ExpressionAttributeValues: {
+        ':nome': personData.nome,
+        ':dataNascimento': personData.dataNascimento,
+        ':paisNascimento': personData.paisNascimento,
+        ':estadoNascimento': personData.estadoNascimento,
+        ':cidadeNascimento': personData.cidadeNascimento,
+        ':email': personData.email,
+        ':nomePai': personData.email,
+        ':nomeMae': personData.nomeMae
+      },
+      ReturnValues: 'ALL_NEW'
+    }
+    const result: DynamoDB.DocumentClient.UpdateItemOutput = await this.docClient.update(params).promise()
+    return result.Attributes as PersonModel
   }
 }
