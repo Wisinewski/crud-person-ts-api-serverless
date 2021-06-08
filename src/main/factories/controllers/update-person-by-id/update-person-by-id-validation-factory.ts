@@ -1,4 +1,3 @@
-import { MongoIdValidatorAdapter } from './../../../../infra/validators/mongo-id-validator-adapter';
 import { MongoIdValidation } from './../../../../validation/validators/mongo-id-validation';
 import { EmailValidatorAdapter } from './../../../../infra/validators/email-validator-adapter';
 import { EmailValidation } from './../../../../validation/validators/email-validation';
@@ -8,7 +7,6 @@ import { ValidationComposite } from './../../../../validation/validators/validat
 
 export const makeUpdatePersonByIdValidation = (): ValidationComposite => {
   const validations: Validation[] = []
-  validations.push(new MongoIdValidation('id', new MongoIdValidatorAdapter()))
   for (const field of ['nome', 'dataNascimento', 'paisNascimento', 'estadoNascimento', 'cidadeNascimento', 'email']) {
     validations.push(new RequiredFieldValidation(field))
   }

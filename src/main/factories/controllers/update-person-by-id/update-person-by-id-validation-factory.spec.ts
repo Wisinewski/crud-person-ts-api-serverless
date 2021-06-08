@@ -1,5 +1,3 @@
-import { MongoIdValidatorAdapter } from './../../../../infra/validators/mongo-id-validator-adapter';
-import { MongoIdValidation } from './../../../../validation/validators/mongo-id-validation';
 import { makeUpdatePersonByIdValidation } from './update-person-by-id-validation-factory';
 import { Validation } from './../../../../presentation/protocols/validation';
 import { ValidationComposite } from './../../../../validation/validators/validation-composite';
@@ -13,7 +11,6 @@ describe('UpdatePersonByIdValidationFactory', () => {
   test('should call ValidationComposite with all validations', () => {
     makeUpdatePersonByIdValidation()
     const validations: Validation[] = []
-    validations.push(new MongoIdValidation('id', new MongoIdValidatorAdapter()))
     for (const field of ['nome', 'dataNascimento', 'paisNascimento', 'estadoNascimento', 'cidadeNascimento', 'email']) {
       validations.push(new RequiredFieldValidation(field))
     }
