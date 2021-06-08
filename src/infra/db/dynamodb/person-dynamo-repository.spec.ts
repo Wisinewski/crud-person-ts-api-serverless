@@ -93,4 +93,14 @@ describe('PersonDynamoRepository', () => {
       expect(updatedPerson).toBeFalsy()
     });
   });
+
+  describe('loadByFilter', () => {
+    test('should return all persons', async () => {
+      const { personDynamoRepositorySpy } = makeSut()
+      personDynamoRepositorySpy.result = [mockPersonModel(), mockPersonModel()]
+      const persons = await personDynamoRepositorySpy.loadByFilter({})
+      expect(persons.length).toBe(2)
+      expect(persons[0].id).toBeTruthy()
+      expect(persons[1].id).toBeTruthy()
+    });
 });
