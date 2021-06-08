@@ -83,5 +83,14 @@ describe('PersonDynamoRepository', () => {
       expect(updatedPerson).toBeTruthy()
       expect(updatedPerson.email).toBe(email)
     });
+
+    test('should return null if updateById fails', async () => {
+      const { personDynamoRepositorySpy } = makeSut()
+      const person = mockPersonModel()
+      person.id = 'any_id'
+      personDynamoRepositorySpy.result = null
+      const updatedPerson = await personDynamoRepositorySpy.updateById(person)
+      expect(updatedPerson).toBeFalsy()
+    });
   });
 });
