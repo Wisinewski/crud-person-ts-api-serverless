@@ -1,4 +1,4 @@
-import { mockAddPersonParams, mockPersonModel } from './../../../domain/test/mock-person';
+import { mockPersonModel } from './../../../domain/test/mock-person';
 import { PersonDynamoRepositorySpy } from './test/mock-dynamo-repository';
 
 type SutTypes = {
@@ -17,7 +17,7 @@ describe('PersonDynamoRepository', () => {
     test('should return a person on loadById success', async () => {
       const { personDynamoRepositorySpy } = makeSut()
       personDynamoRepositorySpy.result = mockPersonModel()
-      const personParams = mockAddPersonParams()
+      const personParams = mockPersonModel()
       const person = await personDynamoRepositorySpy.loadById(personParams.id)
       expect(person).toBeTruthy()
       expect(person.id).toBeTruthy()
@@ -35,7 +35,7 @@ describe('PersonDynamoRepository', () => {
     test('should return null if loadByCpf fails', async () => {
       const { personDynamoRepositorySpy } = makeSut()
       personDynamoRepositorySpy.result = null
-      const personParams = mockAddPersonParams()
+      const personParams = mockPersonModel()
       const person = await personDynamoRepositorySpy.loadById(personParams.id)
       expect(person).toBeFalsy()
     });
@@ -45,7 +45,7 @@ describe('PersonDynamoRepository', () => {
     test('should return a person on add success', async () => {
       const { personDynamoRepositorySpy } = makeSut()
       personDynamoRepositorySpy.result = mockPersonModel()
-      const personParams = mockAddPersonParams()
+      const personParams = mockPersonModel()
       const person = await personDynamoRepositorySpy.add(personParams)
       expect(person).toBeTruthy()
       expect(person.id).toBeTruthy()
@@ -69,6 +69,19 @@ describe('PersonDynamoRepository', () => {
       personDynamoRepositorySpy.result = null
       const deletedPerson = await personDynamoRepositorySpy.loadById(person.id)
       expect(deletedPerson).toBe(null)
+    });
+  });
+
+  describe('updateById', () => {
+    test('should update a person on updateById success', async () => {
+      const { personDynamoRepositorySpy } = makeSut()
+      const person = mockPersonModel()
+      const email = 'other_email@email.com'
+      person.email = email
+      personDynamoRepositorySpy.result = person
+      const updatedPerson = await personDynamoRepositorySpy.updateById(person)
+      expect(updatedPerson).toBeTruthy()
+      expect(updatedPerson.email).toBe(email)
     });
   });
 });
