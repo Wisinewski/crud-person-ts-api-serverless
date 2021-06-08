@@ -12,30 +12,52 @@ const makeSut = (): SutTypes => {
   }
 }
 
-describe('loadById', () => {
-  test('should return a person on loadById success', async () => {
-    const { personDynamoRepositorySpy } = makeSut()
-    personDynamoRepositorySpy.result = mockPersonModel()
-    const personParams = mockAddPersonParams()
-    const person = await personDynamoRepositorySpy.loadById(personParams.id)
-    expect(person).toBeTruthy()
-    expect(person.id).toBeTruthy()
-    expect(person.nome).toBe(personParams.nome)
-    expect(person.email).toBe(personParams.email)
-    expect(person.cpf).toBe(personParams.cpf)
-    expect(person.dataNascimento).toEqual(personParams.dataNascimento)
-    expect(person.paisNascimento).toBe(personParams.paisNascimento)
-    expect(person.estadoNascimento).toBe(personParams.estadoNascimento)
-    expect(person.cidadeNascimento).toBe(personParams.cidadeNascimento)
-    expect(person.nomeMae).toBe(personParams.nomeMae)
-    expect(person.nomePai).toBe(personParams.nomePai)
+describe('PersonDynamoRepository', () => {
+  describe('loadById', () => {
+    test('should return a person on loadById success', async () => {
+      const { personDynamoRepositorySpy } = makeSut()
+      personDynamoRepositorySpy.result = mockPersonModel()
+      const personParams = mockAddPersonParams()
+      const person = await personDynamoRepositorySpy.loadById(personParams.id)
+      expect(person).toBeTruthy()
+      expect(person.id).toBeTruthy()
+      expect(person.nome).toBe(personParams.nome)
+      expect(person.email).toBe(personParams.email)
+      expect(person.cpf).toBe(personParams.cpf)
+      expect(person.dataNascimento).toEqual(personParams.dataNascimento)
+      expect(person.paisNascimento).toBe(personParams.paisNascimento)
+      expect(person.estadoNascimento).toBe(personParams.estadoNascimento)
+      expect(person.cidadeNascimento).toBe(personParams.cidadeNascimento)
+      expect(person.nomeMae).toBe(personParams.nomeMae)
+      expect(person.nomePai).toBe(personParams.nomePai)
+    });
+
+    test('should return null if loadByCpf fails', async () => {
+      const { personDynamoRepositorySpy } = makeSut()
+      personDynamoRepositorySpy.result = null
+      const personParams = mockAddPersonParams()
+      const person = await personDynamoRepositorySpy.loadById(personParams.id)
+      expect(person).toBeFalsy()
+    });
   });
 
-  test('should return null if loadByCpf fails', async () => {
-    const { personDynamoRepositorySpy } = makeSut()
-    personDynamoRepositorySpy.result = null
-    const personParams = mockAddPersonParams()
-    const person = await personDynamoRepositorySpy.loadById(personParams.id)
-    expect(person).toBeFalsy()
+  describe('add', () => {
+    test('should return a person on add success', async () => {
+      const { personDynamoRepositorySpy } = makeSut()
+      personDynamoRepositorySpy.result = mockPersonModel()
+      const personParams = mockAddPersonParams()
+      const person = await personDynamoRepositorySpy.add(personParams)
+      expect(person).toBeTruthy()
+      expect(person.id).toBeTruthy()
+      expect(person.nome).toBe(personParams.nome)
+      expect(person.email).toBe(personParams.email)
+      expect(person.cpf).toBe(personParams.cpf)
+      expect(person.dataNascimento).toEqual(personParams.dataNascimento)
+      expect(person.paisNascimento).toBe(personParams.paisNascimento)
+      expect(person.estadoNascimento).toBe(personParams.estadoNascimento)
+      expect(person.cidadeNascimento).toBe(personParams.cidadeNascimento)
+      expect(person.nomeMae).toBe(personParams.nomeMae)
+      expect(person.nomePai).toBe(personParams.nomePai)
+    });
   });
 });
