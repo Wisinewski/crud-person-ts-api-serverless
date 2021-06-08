@@ -60,4 +60,15 @@ describe('PersonDynamoRepository', () => {
       expect(person.nomePai).toBe(personParams.nomePai)
     });
   });
+
+  describe('deleteById', () => {
+    test('should not return a person on deleteById success', async () => {
+      const { personDynamoRepositorySpy } = makeSut()
+      const person = mockPersonModel()
+      await personDynamoRepositorySpy.deleteById(person.id)
+      personDynamoRepositorySpy.result = null
+      const deletedPerson = await personDynamoRepositorySpy.loadById(person.id)
+      expect(deletedPerson).toBe(null)
+    });
+  });
 });
