@@ -103,4 +103,5 @@ describe('PersonDynamoRepository', () => {
       expect(persons[0].id).toBeTruthy()
       expect(persons[1].id).toBeTruthy()
     });
+  });
 });

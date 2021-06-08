@@ -1,3 +1,5 @@
+import { FilterPersonParams } from './../../../domain/usecases/load-person-by-filter';
+import { LoadPersonByFilterRepository } from './../../../data/protocols/db/load-person-by-filter-repository';
 import { UpdatePersonParams } from './../../../domain/usecases/update-person-by-id';
 import { UpdatePersonByIdRepository } from './../../../data/protocols/db/update-person-by-id-repository';
 import { DeletePersonByIdRepository } from './../../../data/protocols/db/delete-person-by-id-repository';
@@ -7,7 +9,7 @@ import { PersonModel } from './../../../domain/models/person';
 import { LoadPersonByIdRepository } from './../../../data/protocols/db/load-person-by-id-repository';
 import { DynamoDB } from 'aws-sdk';
 
-export class PersonDynamoRepository implements LoadPersonByIdRepository, AddPersonRepository, DeletePersonByIdRepository, UpdatePersonByIdRepository {
+export class PersonDynamoRepository implements LoadPersonByIdRepository, AddPersonRepository, DeletePersonByIdRepository, UpdatePersonByIdRepository, LoadPersonByFilterRepository {
   constructor (
     private readonly table: string,
     private readonly docClient: DynamoDB.DocumentClient = new DynamoDB.DocumentClient()
@@ -73,5 +75,28 @@ export class PersonDynamoRepository implements LoadPersonByIdRepository, AddPers
     }
     const result: DynamoDB.DocumentClient.UpdateItemOutput = await this.docClient.update(params).promise()
     return result.Attributes as PersonModel
+  }
+
+  async loadByFilter (filterParams: FilterPersonParams): Promise<PersonModel[]> {
+    const params: DynamoDB.DocumentClient.ScanInput = {
+      TableName: this.table,
+      FilterExpression:  
+        filterParams.nome ? 'nome = :nome, ' : '' +
+        filterParams.cpf ? 'cpf = :cpf, ' : '' +
+        filterParams.dataNascimento ? 'dataNascimento = :dataNascimento, ' : '' +
+        filterParams.paisNascimento ? 'paisNascimento = :paisNascimento, ' : '' +
+        filterParams.estadoNascimento ? 'estadoNascimento = :estadoNascimento, ' : '' +
+        filterParams.cidadeNascimento ? 'cidadeNascimento = :cidadeNascimento' : '',
+      ExpressionAttributeValues: {
+        ':nome': filterParams.nome,
+        ':cpf': filterParams.cpf,
+        ':dataNascimento': filterParams.dataNascimento,
+        ':paisNascimento': filterParams.paisNascimento,
+        ':estadoNascimento': filterParams.estadoNascimento,
+        ':cidadeNascimento': filterParams.cidadeNascimento
+      }
+    }
+    const result: DynamoDB.DocumentClient.ScanOutput = await this.docClient.scan(params).promise()
+    return result.Items as PersonModel[]
   }
 }
