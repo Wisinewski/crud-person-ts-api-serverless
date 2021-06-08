@@ -1,3 +1,5 @@
+import { FilterPersonParams } from './../../../../domain/usecases/load-person-by-filter';
+import { LoadPersonByFilterRepository } from './../../../../data/protocols/db/load-person-by-filter-repository';
 import { UpdatePersonParams } from './../../../../domain/usecases/update-person-by-id';
 import { UpdatePersonByIdRepository } from './../../../../data/protocols/db/update-person-by-id-repository';
 import { DeletePersonByIdRepository } from './../../../../data/protocols/db/delete-person-by-id-repository';
@@ -6,7 +8,7 @@ import { AddPersonRepository } from './../../../../data/protocols/db/add-person-
 import { PersonModel } from './../../../../domain/models/person';
 import { LoadPersonByIdRepository } from './../../../../data/protocols/db/load-person-by-id-repository';
 
-export class PersonDynamoRepositorySpy implements LoadPersonByIdRepository, AddPersonRepository, DeletePersonByIdRepository, UpdatePersonByIdRepository {
+export class PersonDynamoRepositorySpy implements LoadPersonByIdRepository, AddPersonRepository, DeletePersonByIdRepository, UpdatePersonByIdRepository, LoadPersonByFilterRepository {
   data: any
   result: any
   async loadById (id: string): Promise<PersonModel> { 
@@ -26,6 +28,11 @@ export class PersonDynamoRepositorySpy implements LoadPersonByIdRepository, AddP
 
   async updateById (personData: UpdatePersonParams): Promise<PersonModel> {
     this.data = personData
+    return this.result
+  }
+
+  async loadByFilter (params: FilterPersonParams): Promise<PersonModel[]> {
+    this.data = params
     return this.result
   }
 }
