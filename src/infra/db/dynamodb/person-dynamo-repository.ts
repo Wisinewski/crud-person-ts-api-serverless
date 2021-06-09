@@ -8,49 +8,47 @@ import { AddPersonRepository } from './../../../data/protocols/db/add-person-rep
 import { PersonModel } from './../../../domain/models/person';
 import { LoadPersonByIdRepository } from './../../../data/protocols/db/load-person-by-id-repository';
 import { DynamoDB } from 'aws-sdk';
+import { DynamoHelper } from './helpers/dynamo-helper';
 
 export class PersonDynamoRepository implements LoadPersonByIdRepository, AddPersonRepository, DeletePersonByIdRepository, UpdatePersonByIdRepository, LoadPersonByFilterRepository {
-  constructor (
-    private readonly table: string,
-    private readonly docClient: DynamoDB.DocumentClient = new DynamoDB.DocumentClient()
-  ) {}
+  dynamoHelper: DynamoHelper = new DynamoHelper('PersonsTable')
 
   async loadById (id: string): Promise<PersonModel> {
     const params: DynamoDB.DocumentClient.GetItemInput = {
-      TableName: this.table,
+      TableName: this.dynamoHelper.table,
       Key: {
         id
       }
     }
-    const result: DynamoDB.DocumentClient.GetItemOutput = await this.docClient.get(params).promise()
+    const result: DynamoDB.DocumentClient.GetItemOutput = await this.dynamoHelper.docClient.get(params).promise()
     return result.Item as PersonModel
   }
 
   async add (personData: AddPersonParams): Promise<PersonModel> {
     const params: DynamoDB.DocumentClient.PutItemInput = {
-      TableName: this.table,
+      TableName: this.dynamoHelper.table,
       Item: personData
     }
-    await this.docClient.put(params).promise()
+    await this.dynamoHelper.docClient.put(params).promise()
     return personData
   }
 
 
   async deleteById (id: string): Promise<boolean> {
     const params: DynamoDB.DocumentClient.DeleteItemInput = {
-      TableName: this.table,
+      TableName: this.dynamoHelper.table,
       Key: {
         id
       },
       ReturnValues: 'ALL_OLD'
     }
-    const result: DynamoDB.DocumentClient.DeleteItemOutput = await this.docClient.delete(params).promise()
+    const result: DynamoDB.DocumentClient.DeleteItemOutput = await this.dynamoHelper.docClient.delete(params).promise()
     return !!result.Attributes
   }
 
   async updateById (personData: UpdatePersonParams): Promise<PersonModel> {
     const params: DynamoDB.DocumentClient.UpdateItemInput = {
-      TableName: this.table,
+      TableName: this.dynamoHelper.table,
       Key: { id: personData.id },
       UpdateExpression:
         'set nome = :nome, ' + 
@@ -71,32 +69,45 @@ export class PersonDynamoRepository implements LoadPersonByIdRepository, AddPers
         ':nomePai': personData.email,
         ':nomeMae': personData.nomeMae
       },
+      ConditionExpression: 'attribute_exists(id)',
       ReturnValues: 'ALL_NEW'
     }
-    const result: DynamoDB.DocumentClient.UpdateItemOutput = await this.docClient.update(params).promise()
-    return result.Attributes as PersonModel
+    try {
+      const result: DynamoDB.DocumentClient.UpdateItemOutput = await this.dynamoHelper.docClient.update(params).promise()
+      return result.Attributes as PersonModel
+    } catch (error) {
+      return null
+    }
   }
 
   async loadByFilter (filterParams: FilterPersonParams): Promise<PersonModel[]> {
-    const params: DynamoDB.DocumentClient.ScanInput = {
-      TableName: this.table,
-      FilterExpression:  
-        filterParams.nome ? 'nome = :nome, ' : '' +
-        filterParams.cpf ? 'cpf = :cpf, ' : '' +
-        filterParams.dataNascimento ? 'dataNascimento = :dataNascimento, ' : '' +
-        filterParams.paisNascimento ? 'paisNascimento = :paisNascimento, ' : '' +
-        filterParams.estadoNascimento ? 'estadoNascimento = :estadoNascimento, ' : '' +
-        filterParams.cidadeNascimento ? 'cidadeNascimento = :cidadeNascimento' : '',
-      ExpressionAttributeValues: {
-        ':nome': filterParams.nome,
-        ':cpf': filterParams.cpf,
-        ':dataNascimento': filterParams.dataNascimento,
-        ':paisNascimento': filterParams.paisNascimento,
-        ':estadoNascimento': filterParams.estadoNascimento,
-        ':cidadeNascimento': filterParams.cidadeNascimento
+    let params: DynamoDB.DocumentClient.ScanInput
+    if (Object.values(filterParams).length > 0) {
+      params = {
+        TableName: this.dynamoHelper.table,
+        FilterExpression:  
+          filterParams.nome ? 'nome = :nome ' : '' +
+          filterParams.cpf ? 'AND cpf = :cpf AND ' : '' +
+          filterParams.dataNascimento ? 'AND dataNascimento = :dataNascimento ' : '' +
+          filterParams.paisNascimento ? 'AND paisNascimento = :paisNascimento ' : '' +
+          filterParams.estadoNascimento ? 'AND estadoNascimento = :estadoNascimento ' : '' +
+          filterParams.cidadeNascimento ? 'AND cidadeNascimento = :cidadeNascimento' : '',
+        ExpressionAttributeValues: {
+          ':nome': filterParams.nome,
+          ':cpf': filterParams.cpf,
+          ':dataNascimento': filterParams.dataNascimento,
+          ':paisNascimento': filterParams.paisNascimento,
+          ':estadoNascimento': filterParams.estadoNascimento,
+          ':cidadeNascimento': filterParams.cidadeNascimento
+        }
+      }
+    } else {
+      params = {
+        TableName: this.dynamoHelper.table,
+        Select: 'ALL_ATTRIBUTES'
       }
     }
-    const result: DynamoDB.DocumentClient.ScanOutput = await this.docClient.scan(params).promise()
+    const result: DynamoDB.DocumentClient.ScanOutput = await this.dynamoHelper.docClient.scan(params).promise()
     return result.Items as PersonModel[]
   }
 }
