@@ -1,24 +1,42 @@
+import { DynamoDB } from 'aws-sdk';
+import { MockPersonRepository } from './test/mock-person-repository';
+import { PersonDynamoRepository } from './person-dynamo-repository';
 import { mockPersonModel } from './../../../domain/test/mock-person';
-import { PersonDynamoRepositorySpy } from './test/mock-dynamo-repository';
 
 type SutTypes = {
-  personDynamoRepositorySpy: PersonDynamoRepositorySpy
+  sut: PersonDynamoRepository
+  mockPersonRepository: MockPersonRepository
 }
 
 const makeSut = (): SutTypes => {
-  const personDynamoRepositorySpy = new PersonDynamoRepositorySpy()
+  const sut = new PersonDynamoRepository()
+  const mockPersonRepository = new MockPersonRepository(sut.dynamoHelper)
   return {
-    personDynamoRepositorySpy
+    sut,
+    mockPersonRepository
   }
 }
 
+let docClient: DynamoDB.DocumentClient
+
 describe('PersonDynamoRepository', () => {
+  beforeAll(async () => {
+    docClient = new DynamoDB.DocumentClient({
+      convertEmptyValues: true,
+      ...(process.env.JEST_WORKER_ID && {
+        endpoint: 'localhost:8000',
+        sslEnabled: false,
+        region: 'local-env'
+      })
+    })
+  })
+
   describe('loadById', () => {
     test('should return a person on loadById success', async () => {
-      const { personDynamoRepositorySpy } = makeSut()
-      personDynamoRepositorySpy.result = mockPersonModel()
+      const { sut, mockPersonRepository } = makeSut()
       const personParams = mockPersonModel()
-      const person = await personDynamoRepositorySpy.loadById(personParams.id)
+      await mockPersonRepository.addPerson(personParams)
+      const person = await sut.loadById(personParams.id)
       expect(person).toBeTruthy()
       expect(person.id).toBeTruthy()
       expect(person.nome).toBe(personParams.nome)
@@ -30,23 +48,23 @@ describe('PersonDynamoRepository', () => {
       expect(person.cidadeNascimento).toBe(personParams.cidadeNascimento)
       expect(person.nomeMae).toBe(personParams.nomeMae)
       expect(person.nomePai).toBe(personParams.nomePai)
+      const success = await mockPersonRepository.deletePerson(personParams.id)
+      expect(success).toBeTruthy()
     });
 
     test('should return null if loadByCpf fails', async () => {
-      const { personDynamoRepositorySpy } = makeSut()
-      personDynamoRepositorySpy.result = null
+      const { sut } = makeSut()
       const personParams = mockPersonModel()
-      const person = await personDynamoRepositorySpy.loadById(personParams.id)
+      const person = await sut.loadById(personParams.id)
       expect(person).toBeFalsy()
     });
   });
 
   describe('add', () => {
     test('should return a person on add success', async () => {
-      const { personDynamoRepositorySpy } = makeSut()
-      personDynamoRepositorySpy.result = mockPersonModel()
+      const { sut, mockPersonRepository } = makeSut()
       const personParams = mockPersonModel()
-      const person = await personDynamoRepositorySpy.add(personParams)
+      const person = await sut.add(personParams)
       expect(person).toBeTruthy()
       expect(person.id).toBeTruthy()
       expect(person.nome).toBe(personParams.nome)
@@ -58,50 +76,68 @@ describe('PersonDynamoRepository', () => {
       expect(person.cidadeNascimento).toBe(personParams.cidadeNascimento)
       expect(person.nomeMae).toBe(personParams.nomeMae)
       expect(person.nomePai).toBe(personParams.nomePai)
+      const success = await mockPersonRepository.deletePerson(personParams.id)
+      expect(success).toBeTruthy()
     });
   });
 
   describe('deleteById', () => {
     test('should not return a person on deleteById success', async () => {
-      const { personDynamoRepositorySpy } = makeSut()
-      const person = mockPersonModel()
-      await personDynamoRepositorySpy.deleteById(person.id)
-      personDynamoRepositorySpy.result = null
-      const deletedPerson = await personDynamoRepositorySpy.loadById(person.id)
-      expect(deletedPerson).toBe(null)
+      const { sut, mockPersonRepository } = makeSut()
+      const personParams = mockPersonModel()
+      await mockPersonRepository.addPerson(personParams)
+      await sut.deleteById(personParams.id)
+      const deletedPerson = await sut.loadById(personParams.id)
+      expect(deletedPerson).toBeFalsy()
     });
   });
 
   describe('updateById', () => {
     test('should update a person on updateById success', async () => {
-      const { personDynamoRepositorySpy } = makeSut()
-      const person = mockPersonModel()
+      const { sut, mockPersonRepository } = makeSut()
+      const personParams = mockPersonModel()
+      await mockPersonRepository.addPerson(personParams)
       const email = 'other_email@email.com'
-      person.email = email
-      personDynamoRepositorySpy.result = person
-      const updatedPerson = await personDynamoRepositorySpy.updateById(person)
+      personParams.email = email
+      const updatedPerson = await sut.updateById(personParams)
       expect(updatedPerson).toBeTruthy()
       expect(updatedPerson.email).toBe(email)
+      const success = await mockPersonRepository.deletePerson(personParams.id)
+      expect(success).toBeTruthy()
     });
 
     test('should return null if updateById fails', async () => {
-      const { personDynamoRepositorySpy } = makeSut()
+      const { sut } = makeSut()
       const person = mockPersonModel()
       person.id = 'any_id'
-      personDynamoRepositorySpy.result = null
-      const updatedPerson = await personDynamoRepositorySpy.updateById(person)
+      const updatedPerson = await sut.updateById(person)
       expect(updatedPerson).toBeFalsy()
     });
   });
 
   describe('loadByFilter', () => {
     test('should return all persons', async () => {
-      const { personDynamoRepositorySpy } = makeSut()
-      personDynamoRepositorySpy.result = [mockPersonModel(), mockPersonModel()]
-      const persons = await personDynamoRepositorySpy.loadByFilter({})
-      expect(persons.length).toBe(2)
+      const { sut, mockPersonRepository } = makeSut()
+      const personParams = mockPersonModel()
+      await mockPersonRepository.addPerson(personParams)
+      const persons = await sut.loadByFilter({})
+      expect(persons.length).toBe(1)
       expect(persons[0].id).toBeTruthy()
-      expect(persons[1].id).toBeTruthy()
+      const success = await mockPersonRepository.deletePerson(personParams.id)
+      expect(success).toBeTruthy()
+    });
+
+    test('should return just one person if receives a param', async () => {
+      const { sut, mockPersonRepository } = makeSut()
+      const personParams = mockPersonModel()
+      await mockPersonRepository.addPerson(personParams)
+      const params = {}
+      params['nome'] = 'any_nome'
+      const persons = await sut.loadByFilter(params)
+      expect(persons.length).toBe(1)
+      expect(persons[0].id).toBeTruthy()
+      const success = await mockPersonRepository.deletePerson(personParams.id)
+      expect(success).toBeTruthy()
     });
   });
 });
