@@ -10,7 +10,6 @@ export class DbAddPerson implements AddPerson {
   ) {}
 
   async add (personData: AddPersonParams): Promise<PersonModel> {
-    personData.dataNascimento = new Date(personData.dataNascimento)
     const person = await this.loadPersonByCpfRepository.loadByCpf(personData.cpf)
     if (!person) {
       const person = await this.addPersonRepository.add(personData)

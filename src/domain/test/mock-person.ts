@@ -6,7 +6,7 @@ export const mockPersonModel = (): PersonModel => ({
   id: 'any_id',
   nome: 'any_nome',
   cpf: 'any_cpf',
-  dataNascimento: new Date('2021-01-01'),
+  dataNascimento: '2021-01-01',
   paisNascimento: 'any_paisNascimento',
   estadoNascimento: 'any_estadoNascimento',
   cidadeNascimento: 'any_cidadeNascimento',
@@ -18,7 +18,7 @@ export const mockPersonModel = (): PersonModel => ({
 export const mockUpdatePersonParams = (): UpdatePersonParams => ({
   id: 'any_id',
   nome: 'any_nome',
-  dataNascimento: new Date('2021-01-01'),
+  dataNascimento: '2021-01-01',
   paisNascimento: 'any_paisNascimento',
   estadoNascimento: 'any_estadoNascimento',
   cidadeNascimento: 'any_cidadeNascimento',
@@ -30,7 +30,7 @@ export const mockUpdatePersonParams = (): UpdatePersonParams => ({
 export const mockFilterPersonParams = (): FilterPersonParams => ({
   nome: 'any_nome',
   cpf: 'any_cpf',
-  dataNascimento: new Date('2021-01-01'),
+  dataNascimento: '2021-01-01',
   paisNascimento: 'any_paisNascimento',
   estadoNascimento: 'any_estadoNascimento',
   cidadeNascimento: 'any_cidadeNascimento'

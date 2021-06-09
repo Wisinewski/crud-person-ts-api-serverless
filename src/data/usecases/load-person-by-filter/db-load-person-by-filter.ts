@@ -11,7 +11,7 @@ export class DbLoadPersonByFilter implements LoadPersonByFilter {
     const query = {}
     if (params.nome) query['nome'] = params.nome
     if (params.cpf) query['cpf'] = params.cpf
-    if (params.dataNascimento) query['dataNascimento'] = new Date(params.dataNascimento)
+    if (params.dataNascimento) query['dataNascimento'] = params.dataNascimento
     if (params.paisNascimento) query['paisNascimento'] = params.paisNascimento
     if (params.estadoNascimento) query['estadoNascimento'] = params.estadoNascimento
     if (params.cidadeNascimento) query['cidadeNascimento'] = params.cidadeNascimento

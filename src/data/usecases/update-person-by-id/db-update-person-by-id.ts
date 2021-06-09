@@ -8,7 +8,6 @@ export class DbUpdatePersonById implements UpdatePersonById {
   ) {}
 
   async update (personData: UpdatePersonParams): Promise<PersonModel> {
-    personData.dataNascimento = new Date(personData.dataNascimento)
     const person = await this.updatePersonByIdRepository.updateById(personData)
     return person
   }

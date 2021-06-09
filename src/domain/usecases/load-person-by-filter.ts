@@ -3,7 +3,7 @@ import { PersonModel } from './../models/person';
 export type FilterPersonParams = {
   nome?: string
   cpf?: string
-  dataNascimento?: Date
+  dataNascimento?: string
   paisNascimento?: string
   estadoNascimento?: string
   cidadeNascimento?: string
