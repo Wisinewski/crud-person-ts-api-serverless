@@ -169,5 +169,12 @@ describe('PersonDynamoRepository', () => {
       const success = await mockPersonRepository.deletePerson(personParams.id)
       expect(success).toBeTruthy()
     });
+
+    test('should return null if loadByCpf fails', async () => {
+      const { sut } = makeSut()
+      const personParams = mockPersonModel()
+      const person = await sut.loadByCpf(personParams.cpf)
+      expect(person).toBeFalsy()
+    });
   });
 });
