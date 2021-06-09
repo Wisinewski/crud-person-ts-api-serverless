@@ -148,4 +148,26 @@ describe('PersonDynamoRepository', () => {
       expect(persons.length).toBe(0)
     });
   });
+
+  describe('loadByCpf', () => {
+    test('should return a person on loadByCpf success', async () => {
+      const { sut, mockPersonRepository } = makeSut()
+      const personParams = mockPersonModel()
+      await mockPersonRepository.addPerson(personParams)
+      const person = await sut.loadByCpf(personParams.cpf)
+      expect(person).toBeTruthy()
+      expect(person.id).toBeTruthy()
+      expect(person.nome).toBe(personParams.nome)
+      expect(person.email).toBe(personParams.email)
+      expect(person.cpf).toBe(personParams.cpf)
+      expect(person.dataNascimento).toEqual(personParams.dataNascimento)
+      expect(person.paisNascimento).toBe(personParams.paisNascimento)
+      expect(person.estadoNascimento).toBe(personParams.estadoNascimento)
+      expect(person.cidadeNascimento).toBe(personParams.cidadeNascimento)
+      expect(person.nomeMae).toBe(personParams.nomeMae)
+      expect(person.nomePai).toBe(personParams.nomePai)
+      const success = await mockPersonRepository.deletePerson(personParams.id)
+      expect(success).toBeTruthy()
+    });
+  });
 });
