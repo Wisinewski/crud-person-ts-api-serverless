@@ -1,3 +1,4 @@
+import { LoadPersonByCpfRepository } from './../../../data/protocols/db/load-person-by-cpf-repository';
 import { FilterPersonParams } from './../../../domain/usecases/load-person-by-filter';
 import { LoadPersonByFilterRepository } from './../../../data/protocols/db/load-person-by-filter-repository';
 import { UpdatePersonParams } from './../../../domain/usecases/update-person-by-id';
@@ -10,7 +11,7 @@ import { LoadPersonByIdRepository } from './../../../data/protocols/db/load-pers
 import { DynamoDB } from 'aws-sdk';
 import { DynamoHelper } from './helpers/dynamo-helper';
 
-export class PersonDynamoRepository implements LoadPersonByIdRepository, AddPersonRepository, DeletePersonByIdRepository, UpdatePersonByIdRepository, LoadPersonByFilterRepository {
+export class PersonDynamoRepository implements LoadPersonByIdRepository, AddPersonRepository, DeletePersonByIdRepository, UpdatePersonByIdRepository, LoadPersonByFilterRepository, LoadPersonByCpfRepository {
   dynamoHelper: DynamoHelper = new DynamoHelper('PersonsTable')
 
   async loadById (id: string): Promise<PersonModel> {
@@ -109,5 +110,17 @@ export class PersonDynamoRepository implements LoadPersonByIdRepository, AddPers
     }
     const result: DynamoDB.DocumentClient.ScanOutput = await this.dynamoHelper.docClient.scan(params).promise()
     return result.Items as PersonModel[]
+  }
+
+  async loadByCpf (cpf: string): Promise<PersonModel> {
+    const params: DynamoDB.DocumentClient.ScanInput = {
+      TableName: this.dynamoHelper.table,
+      FilterExpression: 'cpf = :cpf',
+      ExpressionAttributeValues: {
+        ':cpf': cpf
+      }
+    }
+    const result: DynamoDB.DocumentClient.ScanOutput = await this.dynamoHelper.docClient.scan(params).promise()
+    return result.Items[0] as PersonModel
   }
 }
