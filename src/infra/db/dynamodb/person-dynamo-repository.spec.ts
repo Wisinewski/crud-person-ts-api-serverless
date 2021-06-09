@@ -139,5 +139,13 @@ describe('PersonDynamoRepository', () => {
       const success = await mockPersonRepository.deletePerson(personParams.id)
       expect(success).toBeTruthy()
     });
+
+    test('should return an empty list if no person matches with the received param', async () => {
+      const { sut, mockPersonRepository } = makeSut()
+      const personParams = mockPersonModel()
+      await mockPersonRepository.addPerson(personParams)
+      const persons = await sut.loadByFilter({ nome: 'other_nome' })
+      expect(persons.length).toBe(0)
+    });
   });
 });
