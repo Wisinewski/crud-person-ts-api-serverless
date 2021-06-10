@@ -1,3 +1,4 @@
+import { UuidGeneratorAdapterSpy } from './../../test/mock-uuid-generator';
 import { throwError } from './../../../domain/test/test-helper';
 import { mockPersonModel } from './../../../domain/test/mock-person';
 import { AddPersonRepositorySpy, LoadPersonByCpfRepositorySpy } from './../../test/mock-db-person';
@@ -7,16 +8,19 @@ type SutTypes = {
   sut: DbAddPerson
   loadPersonByCpfRepositorySpy: LoadPersonByCpfRepositorySpy
   addPersonRepositorySpy: AddPersonRepositorySpy
+  uuidGeneratorAdapterSpy: UuidGeneratorAdapterSpy
 }
 
 const makeSut = (): SutTypes => {
   const addPersonRepositorySpy = new AddPersonRepositorySpy()
   const loadPersonByCpfRepositorySpy = new LoadPersonByCpfRepositorySpy()
-  const sut = new DbAddPerson(loadPersonByCpfRepositorySpy, addPersonRepositorySpy)
+  const uuidGeneratorAdapterSpy = new UuidGeneratorAdapterSpy()
+  const sut = new DbAddPerson(loadPersonByCpfRepositorySpy, addPersonRepositorySpy, uuidGeneratorAdapterSpy)
   return {
     sut,
     loadPersonByCpfRepositorySpy,
-    addPersonRepositorySpy
+    addPersonRepositorySpy,
+    uuidGeneratorAdapterSpy
   }
 }
 
