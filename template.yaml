@@ -5,9 +5,14 @@ Description: >-
 Transform:
 - AWS::Serverless-2016-10-31
 
+package:
+  individually: true
+
 Resources:
   getByIdFunction:
     Type: AWS::Serverless::Function
+    Metadata:
+      BuildMethod: makefile
     Properties:
       CodeUri: dist/
       Handler: src/main/handlers/load-person-by-id/load-person-by-id-handler.handler
@@ -27,45 +32,103 @@ Resources:
           Properties:
             Path: /persons/{id}
             Method: GET
-  # Each Lambda function is defined by properties:
-  # https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
 
-  # This is a Lambda function config associated with the source code: put-item.js
-  #putItemFunction:
-  #  Type: AWS::Serverless::Function
-  #  Metadata:
-  #    BuildMethod: makefile
-  #  Properties:
-  #    CodeUri: app/
-  #    Handler: dist/src/handlers/post.handler
-  #    Runtime: nodejs12.x
-  #    MemorySize: 128
-  #    Timeout: 100
-  #    Description: A simple example includes a HTTP post method to add one item to a DynamoDB table.
-  #    Policies:
-  #      # Give Create/Read/Update/Delete Permissions to the SampleTable
-  #      - DynamoDBCrudPolicy:
-  #          TableName: !Ref SampleTable
-  #    Environment:
-  #      Variables:
-  #        # Make table name accessible as environment variable from function code during execution
-  #        SAMPLE_TABLE: !Ref SampleTable
-  #    Events:
-  #      Api:
-  #        Type: Api
-  #        Properties:
-  #          Path: /
-  #          Method: POST
-        #Stream:
-        #  Type: DynamoDB
-        #  Properties:
-        #    Stream: !GetAtt SampleTable.StreamArn
-        #    BatchSize: 5
-        #    StartingPosition: TRIM_HORIZON
-  # Simple syntax to create a DynamoDB table with a single attribute primary key, more in
-  # https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlesssimpletable
+  getByFilterFunction:
+    Type: AWS::Serverless::Function
+    Metadata:
+      BuildMethod: makefile
+    Properties:
+      CodeUri: dist/
+      Handler: src/main/handlers/load-person-by-filter/load-person-by-filter-handler.handler
+      Runtime: nodejs12.x
+      MemorySize: 128
+      Timeout: 100
+      Description: HTTP get method to get items by filter from a DynamoDB table.
+      Policies:
+        - DynamoDBCrudPolicy:
+            TableName: !Ref PersonsTable
+      Environment:
+        Variables:
+          PERSONS_TABLE: !Ref PersonsTable
+      Events:
+        Api:
+          Type: Api
+          Properties:
+            Path: /persons
+            Method: GET
 
-  # DynamoDB table to store item: {id: &lt;ID&gt;, name: &lt;NAME&gt;}
+  deleteByIdFunction:
+    Type: AWS::Serverless::Function
+    Metadata:
+      BuildMethod: makefile
+    Properties:
+      CodeUri: dist/
+      Handler: src/main/handlers/delete-person-by-id/delete-person-by-id-handler.handler
+      Runtime: nodejs12.x
+      MemorySize: 128
+      Timeout: 100
+      Description: HTTP delete method to delete one item by id from a DynamoDB table.
+      Policies:
+        - DynamoDBCrudPolicy:
+            TableName: !Ref PersonsTable
+      Environment:
+        Variables:
+          PERSONS_TABLE: !Ref PersonsTable
+      Events:
+        Api:
+          Type: Api
+          Properties:
+            Path: /persons/{id}
+            Method: DELETE
+
+  putFunction:
+    Type: AWS::Serverless::Function
+    Metadata:
+      BuildMethod: makefile
+    Properties:
+      CodeUri: dist/
+      Handler: src/main/handlers/add-person/add-person-handler.handler
+      Runtime: nodejs12.x
+      MemorySize: 128
+      Timeout: 100
+      Description: HTTP post method to create one item in a DynamoDB table.
+      Policies:
+        - DynamoDBCrudPolicy:
+            TableName: !Ref PersonsTable
+      Environment:
+        Variables:
+          PERSONS_TABLE: !Ref PersonsTable
+      Events:
+        Api:
+          Type: Api
+          Properties:
+            Path: /persons
+            Method: POST
+
+  updateByIdFunction:
+    Type: AWS::Serverless::Function
+    Metadata:
+      BuildMethod: makefile
+    Properties:
+      CodeUri: dist/
+      Handler: src/main/handlers/update-person-by-id/update-person-by-id-handler.handler
+      Runtime: nodejs12.x
+      MemorySize: 128
+      Timeout: 100
+      Description: HTTP put method to update one item by id in a DynamoDB table.
+      Policies:
+        - DynamoDBCrudPolicy:
+            TableName: !Ref PersonsTable
+      Environment:
+        Variables:
+          PERSONS_TABLE: !Ref PersonsTable
+      Events:
+        Api:
+          Type: Api
+          Properties:
+            Path: /persons/{id}
+            Method: PUT
+
   PersonsTable:
     Type: AWS::Serverless::SimpleTable
     Properties:
