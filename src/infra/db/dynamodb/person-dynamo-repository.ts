@@ -4,7 +4,6 @@ import { LoadPersonByFilterRepository } from './../../../data/protocols/db/load-
 import { UpdatePersonParams } from './../../../domain/usecases/update-person-by-id';
 import { UpdatePersonByIdRepository } from './../../../data/protocols/db/update-person-by-id-repository';
 import { DeletePersonByIdRepository } from './../../../data/protocols/db/delete-person-by-id-repository';
-import { AddPersonParams } from './../../../domain/usecases/add-person';
 import { AddPersonRepository } from './../../../data/protocols/db/add-person-repository';
 import { PersonModel } from './../../../domain/models/person';
 import { LoadPersonByIdRepository } from './../../../data/protocols/db/load-person-by-id-repository';
@@ -12,7 +11,11 @@ import { DynamoDB } from 'aws-sdk';
 import { DynamoHelper } from './helpers/dynamo-helper';
 
 export class PersonDynamoRepository implements LoadPersonByIdRepository, AddPersonRepository, DeletePersonByIdRepository, UpdatePersonByIdRepository, LoadPersonByFilterRepository, LoadPersonByCpfRepository {
-  dynamoHelper: DynamoHelper = new DynamoHelper('PersonsTable')
+  constructor (
+    private readonly table = 'PersonsTable'
+  ) {}
+  
+  dynamoHelper: DynamoHelper = new DynamoHelper(process.env['PERSONS_TABLE'] || this.table)
 
   async loadById (id: string): Promise<PersonModel> {
     const params: DynamoDB.DocumentClient.GetItemInput = {
@@ -25,7 +28,7 @@ export class PersonDynamoRepository implements LoadPersonByIdRepository, AddPers
     return result.Item as PersonModel
   }
 
-  async add (personData: AddPersonParams): Promise<PersonModel> {
+  async add (personData: PersonModel): Promise<PersonModel> {
     const params: DynamoDB.DocumentClient.PutItemInput = {
       TableName: this.dynamoHelper.table,
       Item: personData
@@ -84,15 +87,19 @@ export class PersonDynamoRepository implements LoadPersonByIdRepository, AddPers
   async loadByFilter (filterParams: FilterPersonParams): Promise<PersonModel[]> {
     let params: DynamoDB.DocumentClient.ScanInput
     if (Object.values(filterParams).length > 0) {
+      const fixedFilters = ['nome', 'cpf', 'dataNascimento', 'paisNascimento', 'estadoNascimento', 'cidadeNascimento']
+      const keys = Object.keys(filterParams)
+      let filterExpression = ''
+      filterExpression += fixedFilters.find(filter => filter === keys[0]) ? `${keys[0]} = :${keys[0]} ` : ''
+      filterExpression += fixedFilters.find(filter => filter === keys[1]) ? `AND ${keys[1]} = :${keys[1]} ` : ''
+      filterExpression += fixedFilters.find(filter => filter === keys[2]) ? `AND ${keys[2]} = :${keys[2]} ` : ''
+      filterExpression += fixedFilters.find(filter => filter === keys[3]) ? `AND ${keys[3]} = :${keys[3]} ` : ''
+      filterExpression += fixedFilters.find(filter => filter === keys[4]) ? `AND ${keys[4]} = :${keys[4]} ` : ''
+      filterExpression += fixedFilters.find(filter => filter === keys[5]) ? `AND ${keys[5]} = :${keys[5]} ` : ''
       params = {
         TableName: this.dynamoHelper.table,
         FilterExpression:  
-          filterParams.nome ? 'nome = :nome ' : '' +
-          filterParams.cpf ? 'AND cpf = :cpf AND ' : '' +
-          filterParams.dataNascimento ? 'AND dataNascimento = :dataNascimento ' : '' +
-          filterParams.paisNascimento ? 'AND paisNascimento = :paisNascimento ' : '' +
-          filterParams.estadoNascimento ? 'AND estadoNascimento = :estadoNascimento ' : '' +
-          filterParams.cidadeNascimento ? 'AND cidadeNascimento = :cidadeNascimento' : '',
+          filterExpression,
         ExpressionAttributeValues: {
           ':nome': filterParams.nome,
           ':cpf': filterParams.cpf,
