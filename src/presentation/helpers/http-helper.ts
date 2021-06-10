@@ -3,12 +3,12 @@ import { HttpResponse } from './../protocols/http';
 
 export const ok = (data: any): HttpResponse => ({
   statusCode: 200,
-  body: data
+  body: JSON.stringify(data)
 })
 
 export const created = (data: any): HttpResponse => ({
   statusCode: 201,
-  body: data
+  body: JSON.stringify(data)
 })
 
 export const noContent = (): HttpResponse => ({
@@ -18,20 +18,20 @@ export const noContent = (): HttpResponse => ({
 
 export const badRequest = (error: Error): HttpResponse => ({
   statusCode: 400,
-  body: error
+  body: JSON.stringify({ error: error.message })
 })
 
 export const notFound = (error: Error): HttpResponse => ({
   statusCode: 404,
-  body: error
+  body: JSON.stringify({ error: error.message })
 })
 
 export const conflict = (error: Error): HttpResponse => ({
   statusCode: 409,
-  body: error
+  body: JSON.stringify({ error: error.message })
 })
 
 export const serverError = (error: Error): HttpResponse => ({
   statusCode: 500,
-  body: new ServerError(error.stack)
+  body: JSON.stringify(new ServerError(error.stack))
 })
