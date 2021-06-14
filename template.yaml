@@ -5,8 +5,10 @@ Description: >-
 Transform:
 - AWS::Serverless-2016-10-31
 
-package:
-  individually: true
+#Globals:
+#  Function:
+#    Layers:
+#      - !Ref RuntimeDependenciesLayer
 
 Resources:
   getByIdFunction:
@@ -15,11 +17,13 @@ Resources:
       BuildMethod: makefile
     Properties:
       CodeUri: dist/
-      Handler: src/main/handlers/load-person-by-id/load-person-by-id-handler.handler
+      Handler: main/handlers/load-person-by-id/load-person-by-id-handler.handler
       Runtime: nodejs12.x
       MemorySize: 128
       Timeout: 100
       Description: HTTP get method to get one item by id from a DynamoDB table.
+      #Layers:
+      #  - !Ref RuntimeDependenciesLayer
       Policies:
         - DynamoDBCrudPolicy:
             TableName: !Ref PersonsTable
@@ -39,11 +43,13 @@ Resources:
       BuildMethod: makefile
     Properties:
       CodeUri: dist/
-      Handler: src/main/handlers/load-person-by-filter/load-person-by-filter-handler.handler
+      Handler: main/handlers/load-person-by-filter/load-person-by-filter-handler.handler
       Runtime: nodejs12.x
       MemorySize: 128
       Timeout: 100
       Description: HTTP get method to get items by filter from a DynamoDB table.
+      #Layers:
+      #  - !Ref RuntimeDependenciesLayer
       Policies:
         - DynamoDBCrudPolicy:
             TableName: !Ref PersonsTable
@@ -63,11 +69,13 @@ Resources:
       BuildMethod: makefile
     Properties:
       CodeUri: dist/
-      Handler: src/main/handlers/delete-person-by-id/delete-person-by-id-handler.handler
+      Handler: main/handlers/delete-person-by-id/delete-person-by-id-handler.handler
       Runtime: nodejs12.x
       MemorySize: 128
       Timeout: 100
       Description: HTTP delete method to delete one item by id from a DynamoDB table.
+      #Layers:
+      #  - !Ref RuntimeDependenciesLayer
       Policies:
         - DynamoDBCrudPolicy:
             TableName: !Ref PersonsTable
@@ -87,11 +95,13 @@ Resources:
       BuildMethod: makefile
     Properties:
       CodeUri: dist/
-      Handler: src/main/handlers/add-person/add-person-handler.handler
+      Handler: main/handlers/add-person/add-person-handler.handler
       Runtime: nodejs12.x
       MemorySize: 128
       Timeout: 100
       Description: HTTP post method to create one item in a DynamoDB table.
+      #Layers:
+      #  - !Ref RuntimeDependenciesLayer
       Policies:
         - DynamoDBCrudPolicy:
             TableName: !Ref PersonsTable
@@ -111,11 +121,13 @@ Resources:
       BuildMethod: makefile
     Properties:
       CodeUri: dist/
-      Handler: src/main/handlers/update-person-by-id/update-person-by-id-handler.handler
+      Handler: main/handlers/update-person-by-id/update-person-by-id-handler.handler
       Runtime: nodejs12.x
       MemorySize: 128
       Timeout: 100
       Description: HTTP put method to update one item by id in a DynamoDB table.
+      #Layers:
+      #  - !Ref RuntimeDependenciesLayer
       Policies:
         - DynamoDBCrudPolicy:
             TableName: !Ref PersonsTable
@@ -138,6 +150,17 @@ Resources:
       ProvisionedThroughput:
         ReadCapacityUnits: 2
         WriteCapacityUnits: 2
+
+  RuntimeDependenciesLayer:
+    Type: AWS::Serverless::LayerVersion
+    Metadata:
+      BuildMethod: makefile
+    Properties:
+      Description: Runtime dependencies for Lambdas
+      ContentUri: ./
+      CompatibleRuntimes:
+        - nodejs12.x
+      RetentionPolicy: Retain
 
 Outputs:
   WebEndpoint:
