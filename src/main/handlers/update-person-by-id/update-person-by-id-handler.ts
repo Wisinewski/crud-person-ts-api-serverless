@@ -9,7 +9,7 @@ import { ApiGatewayEvent } from './../../apigateway/apigateway-event';
 export const handler = async (event: ApiGatewayEvent): Promise<ApiGatewayResponse> => {
   try {
     const validation = makeUpdatePersonByIdValidation()
-    const error = validation.validate(event.body)
+    const error = validation.validate(JSON.parse(event.body))
     if (error) {
       return badRequest(error)
     }
