@@ -90,7 +90,7 @@ export class PersonDynamoRepository implements LoadPersonByIdRepository, AddPers
       const fixedFilters = ['nome', 'cpf', 'dataNascimento', 'paisNascimento', 'estadoNascimento', 'cidadeNascimento']
       const keys = Object.keys(filterParams)
       let filterExpression = ''
-      filterExpression += fixedFilters.find(filter => filter === keys[0]) ? `${keys[0]} = :${keys[0]} ` : ''
+      filterExpression += `${keys[0]} = :${keys[0]} `
       filterExpression += fixedFilters.find(filter => filter === keys[1]) ? `AND ${keys[1]} = :${keys[1]} ` : ''
       filterExpression += fixedFilters.find(filter => filter === keys[2]) ? `AND ${keys[2]} = :${keys[2]} ` : ''
       filterExpression += fixedFilters.find(filter => filter === keys[3]) ? `AND ${keys[3]} = :${keys[3]} ` : ''

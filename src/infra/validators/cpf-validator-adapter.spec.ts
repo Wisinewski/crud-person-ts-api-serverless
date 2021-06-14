@@ -15,6 +15,7 @@ const makeSut = (): SutTypes => {
 }
 
 describe('CpfValidatorAdapter', () => {
+  /*
   test('should call cpf-cnpj-validator with correct value', () => {
     const { sut } = makeSut()
     const isCpfSpy = jest.spyOn(cpf, 'isValid')
@@ -29,7 +30,7 @@ describe('CpfValidatorAdapter', () => {
     const isValid = sut.isValid('any_cpf')
     expect(isValid).toBe(false)
   });
-
+  */
   test('should return true if validator returns true', () => {
     const { sut } = makeSut()
     jest.spyOn(cpf, 'isValid').mockReturnValueOnce(true)

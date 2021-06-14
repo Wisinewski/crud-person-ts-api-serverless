@@ -133,6 +133,11 @@ describe('PersonDynamoRepository', () => {
       await mockPersonRepository.addPerson(personParams)
       const params = {}
       params['nome'] = 'any_nome'
+      params['cpf'] = 'any_cpf'
+      params['dataNascimento'] = '2021-01-01'
+      params['paisNascimento'] = 'any_paisNascimento',
+      params['estadoNascimento'] = 'any_estadoNascimento',
+      params['cidadeNascimento'] = 'any_cidadeNascimento'
       const persons = await sut.loadByFilter(params)
       expect(persons.length).toBe(1)
       expect(persons[0].id).toBeTruthy()

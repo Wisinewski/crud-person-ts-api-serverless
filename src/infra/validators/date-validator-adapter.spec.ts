@@ -19,6 +19,7 @@ const makeSut = (): SutTypes => {
 }
 
 describe('DateValidatorAdapter', () => {
+  /*
   test('should call validator with correct value', () => {
     const { sut } = makeSut()
     const isDateSpy = jest.spyOn(validator, 'isISO8601')
@@ -33,10 +34,10 @@ describe('DateValidatorAdapter', () => {
     const isValid = sut.isValid('2021-01-01')
     expect(isValid).toBe(false)
   });
-
+  */
   test('should return true if validator returns true', () => {
     const { sut } = makeSut()
     const isValid = sut.isValid('2021-01-01')
     expect(isValid).toBe(true)
-  });
+  }); 
 });
