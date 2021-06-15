@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "start": "sam local start-api",
-    "build": "rimraf dist && cd node_modules/typescript/bin/ && tsc",
+    "build": "rimraf dist && tsc && copy package.json dist",
     "dev": "npm run build && npm start",
     "db:up": "cd src/infra/db/mongodb/mongo-migrations && migrate-mongo up",
     "db:down": "cd src/infra/db/mongodb/mongo-migrations && migrate-mongo down",
