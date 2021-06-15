@@ -162,6 +162,16 @@ Resources:
         - nodejs12.x
       RetentionPolicy: Retain
 
+  RestApi:
+    Type: AWS:Serverless::Api
+    Properties:
+      StageName: dev
+      DefinitionBody:
+        Fn::Transform:
+          Name: AWS::Include
+          Parameters:
+            Location: ./swagger.yaml
+
 Outputs:
   WebEndpoint:
     Description: "API Gateway endpoint URL for Prod stage"

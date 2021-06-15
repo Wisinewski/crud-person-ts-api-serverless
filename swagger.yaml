@@ -1,0 +1,262 @@
+openapi: 3.0.0
+info:
+  title: crud-person-ts-api
+  description: API para realizar CRUD de pessoas
+  version: 4.1.1
+servers:
+- url: 'http://127.0.0.1:3000'
+tags:
+  - name: Pessoa
+paths:
+  '/persons':
+    post:
+      tags:
+        - Pessoa
+      summary: API para criar uma pessoa
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/schemas/addPersonParams'
+      responses:
+        '201':
+          description: Criado
+          content:
+            application/json:
+              schema:
+                $ref: '#/schemas/person'
+        '400':
+          $ref: '#/components/badRequest'
+        '404':
+          $ref: '#/components/notFound'
+        '409':
+          $ref: '#/components/conflict'
+        '500':
+          $ref: '#/components/serverError'
+    get:
+      tags:
+        - Pessoa
+      summary: API para consultar os dados de pessoas por filtro
+      parameters:
+        - in: query
+          name: nome
+          schema:
+            type: string
+        - in: query
+          name: cpf
+          schema:
+            type: string
+        - in: query
+          name: dataNascimento
+          schema:
+            type: string
+        - in: query
+          name: paisNascimento
+          schema:
+            type: string
+        - in: query
+          name: estadoNascimento
+          schema:
+            type: string
+        - in: query
+          name: cidadeNascimento
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Sucesso
+          content:
+            application/json:
+              schema:
+                $ref: '#/schemas/persons'
+        '404':
+          $ref: '#/components/notFound'
+        '500':
+          $ref: '#/components/serverError'
+  '/persons/{id}':
+    get:
+      tags:
+        - Pessoa
+      summary: API para consultar os dados de uma pessoa pelo ID
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Sucesso
+          content:
+            application/json:
+              schema:
+                $ref: '#/schemas/person'
+        '400':
+          $ref: '#/components/badRequest'
+        '404':
+          $ref: '#/components/notFound'
+        '500':
+          $ref: '#/components/serverError'
+    put:
+      tags:
+        - Pessoa
+      summary: API para atualizar uma pessoa pelo ID
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/schemas/updatePersonByIdParams'
+      responses:
+        '200':
+          description: Sucesso
+          content:
+            application/json:
+              schema:
+                $ref: '#/schemas/person'
+        '400':
+          $ref: '#/components/badRequest'
+        '404':
+          $ref: '#/components/notFound'
+        '500':
+          $ref: '#/components/serverError'
+    delete:
+      tags:
+        - Pessoa
+      summary: API para remover uma pessoa pelo ID
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+      responses:
+        '204':
+          $ref: '#/components/noContent'
+        '400':
+          $ref: '#/components/badRequest'
+        '404':
+          $ref: '#/components/notFound'
+        '500':
+          $ref: '#/components/serverError'
+schemas:
+  person:
+    type: object
+    properties:
+      id:
+        type: string
+      nome:
+        type: string
+      cpf:
+        type: string
+      dataNascimento:
+        type: string
+      paisNascimento:
+        type: string
+      estadoNascimento:
+        type: string
+      cidadeNascimento:
+        type: string
+      email:
+        type: string
+      nomePai:
+        type: string
+      nomeMae:
+        type: string
+  persons:
+    type: array
+    items:
+      $ref: '#/schemas/person'
+  addPersonParams:
+    type: object
+    properties:
+      nome:
+        type: string
+      cpf:
+        type: string
+      dataNascimento:
+        type: string
+      paisNascimento:
+        type: string
+      estadoNascimento:
+        type: string
+      cidadeNascimento:
+        type: string
+      email:
+        type: string
+      nomePai:
+        type: string
+      nomeMae:
+        type: string
+    required:
+      - nome
+      - cpf
+      - dataNascimento
+      - paisNascimento
+      - estadoNascimento
+      - cidadeNascimento
+      - email
+      - nomePai
+      - nomeMae
+  updatePersonByIdParams:
+    type: object
+    properties:
+      nome:
+        type: string
+      dataNascimento:
+        type: string
+      paisNascimento:
+        type: string
+      estadoNascimento:
+        type: string
+      cidadeNascimento:
+        type: string
+      email:
+        type: string
+      nomePai:
+        type: string
+      nomeMae:
+        type: string
+    required:
+      - id
+      - nome
+      - dataNascimento
+      - paisNascimento
+      - estadoNascimento
+      - cidadeNascimento
+      - email
+      - nomePai
+      - nomeMae
+  error:
+    type: object
+    properties:
+      error:
+        type: string
+components:
+  badRequest:
+    description: Requisição inválida
+    content:
+      application/json:
+        schema:
+          $ref: '#/schemas/error'
+  serverError:
+    description: Erro no servidor
+    content:
+      application/json:
+        schema:
+          $ref: '#/schemas/error'
+  notFound:
+    description: Não encontrado
+  noContent:
+    description: Sem conteúdo
+  conflict:
+    description: Dado já existente no servidor
+    content:
+      application/json:
+        schema:
+          $ref: '#/schemas/error'
