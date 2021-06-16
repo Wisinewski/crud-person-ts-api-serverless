@@ -8,10 +8,12 @@
     "target": "ES2019",
     "esModuleInterop": true,
     "allowJs": true,
-    "baseUrl": "src"
+    "baseUrl": "src",
+    "resolveJsonModule": true
   },
   "include": [
-    "src"
+    "src",
+    "src/**/**/*.json"
   ],
   "exclude": [
     "**/*.spec.ts",

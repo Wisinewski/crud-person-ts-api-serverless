@@ -1,0 +1,9 @@
+{
+  "name": "add-person-function-dependencies",
+  "version": "1.0.0",
+  "dependencies": {
+    "cpf-cnpj-validator": "^1.0.3",
+    "uuid": "^8.3.2",
+    "validator": "^13.6.0"
+  }
+}

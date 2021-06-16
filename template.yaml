@@ -14,8 +14,8 @@ Resources:
   getByIdFunction:
     Type: AWS::Serverless::Function
     Properties:
-      CodeUri: dist/
-      Handler: main/handlers/load-person-by-id/load-person-by-id-handler.handler
+      CodeUri: dist/lambdas/load-person-by-id-function/
+      Handler: load-person-by-id-handler.handler
       Runtime: nodejs12.x
       MemorySize: 128
       Timeout: 100
@@ -36,8 +36,8 @@ Resources:
   getByFilterFunction:
     Type: AWS::Serverless::Function
     Properties:
-      CodeUri: dist/
-      Handler: main/handlers/load-person-by-filter/load-person-by-filter-handler.handler
+      CodeUri: dist/lambdas/load-person-by-filter-function/
+      Handler: load-person-by-filter-handler.handler
       Runtime: nodejs12.x
       MemorySize: 128
       Timeout: 100
@@ -58,8 +58,8 @@ Resources:
   deleteByIdFunction:
     Type: AWS::Serverless::Function
     Properties:
-      CodeUri: dist/
-      Handler: main/handlers/delete-person-by-id/delete-person-by-id-handler.handler
+      CodeUri: dist/lambdas/delete-person-by-id-function/
+      Handler: delete-person-by-id-handler.handler
       Runtime: nodejs12.x
       MemorySize: 128
       Timeout: 100
@@ -80,8 +80,8 @@ Resources:
   putFunction:
     Type: AWS::Serverless::Function
     Properties:
-      CodeUri: dist/
-      Handler: main/handlers/add-person/add-person-handler.handler
+      CodeUri: dist/lambdas/add-person-function/
+      Handler: add-person-handler.handler
       Runtime: nodejs12.x
       MemorySize: 128
       Timeout: 100
@@ -102,8 +102,8 @@ Resources:
   updateByIdFunction:
     Type: AWS::Serverless::Function
     Properties:
-      CodeUri: dist/
-      Handler: main/handlers/update-person-by-id/update-person-by-id-handler.handler
+      CodeUri: dist/lambdas/update-person-by-id-function/
+      Handler: update-person-by-id-handler.handler
       Runtime: nodejs12.x
       MemorySize: 128
       Timeout: 100
@@ -137,20 +137,21 @@ Resources:
       BuildMethod: nodejs12.x
     Properties:
       Description: External dependencies for Lambdas
-      ContentUri: ./
+      ContentUri: dist/layers/shared-external-dependencies/
       CompatibleRuntimes:
         - nodejs12.x
       RetentionPolicy: Retain
 
-  RestApi:
-    Type: AWS:Serverless::Api
-    Properties:
-      StageName: dev
-      DefinitionBody:
-        Fn::Transform:
-          Name: AWS::Include
-          Parameters:
-            Location: ./swagger.yaml
+  #RestApi:
+  #  Type: AWS:Serverless::Api
+  #  Properties:
+  #    Path: /docs
+  #    StageName: dev
+  #    DefinitionBody:
+  #      Fn::Transform:
+  #        Name: AWS::Include
+  #        Parameters:
+  #          Location: ./swagger.yaml
 
 Outputs:
   WebEndpoint:
