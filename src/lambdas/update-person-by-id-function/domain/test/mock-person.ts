@@ -9,7 +9,7 @@ export const mockPersonModel = (): PersonModel => ({
   paisNascimento: 'any_paisNascimento',
   estadoNascimento: 'any_estadoNascimento',
   cidadeNascimento: 'any_cidadeNascimento',
-  email: 'any_emailNascimento',
+  email: 'any_email',
   nomePai: 'any_nomePai',
   nomeMae: 'any_nomeMae'
 })
@@ -21,7 +21,7 @@ export const mockUpdatePersonParams = (): UpdatePersonParams => ({
   paisNascimento: 'any_paisNascimento',
   estadoNascimento: 'any_estadoNascimento',
   cidadeNascimento: 'any_cidadeNascimento',
-  email: 'any_emailNascimento',
+  email: 'any_email',
   nomePai: 'any_nomePai',
   nomeMae: 'any_nomeMae'
 })

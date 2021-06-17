@@ -41,7 +41,7 @@ describe('PersonDynamoRepository', () => {
       const updatedPerson = await sut.updateById(personParams)
       expect(updatedPerson).toBeTruthy()
       expect(updatedPerson.email).toBe(email)
-      const success = await mockPersonRepository.deletePerson(personParams.id)
+      const success = await mockPersonRepository.deletePerson(updatedPerson.id)
       expect(success).toBeTruthy()
     });
 

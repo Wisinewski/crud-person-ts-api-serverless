@@ -11,7 +11,7 @@
     "test:staged": "jest",
     "test:unit": "npm test -- --watch --runInBand",
     "test:integration": "npm test -- --watch -c",
-    "test:ci": "npm test -- --coverage"
+    "test:ci": "npm test -- --coverage --runInBand"
   },
   "author": "Giancarlo Wisinewski Gomes <giancarlo.gomes@fcamara.com.br>",
   "license": "ISC",

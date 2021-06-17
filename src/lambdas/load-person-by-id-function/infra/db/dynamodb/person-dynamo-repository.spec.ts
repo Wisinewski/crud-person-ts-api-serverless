@@ -48,7 +48,7 @@ describe('PersonDynamoRepository', () => {
       expect(person.cidadeNascimento).toBe(personParams.cidadeNascimento)
       expect(person.nomeMae).toBe(personParams.nomeMae)
       expect(person.nomePai).toBe(personParams.nomePai)
-      const success = await mockPersonRepository.deletePerson(personParams.id)
+      const success = await mockPersonRepository.deletePerson(person.id)
       expect(success).toBeTruthy()
     });
 

@@ -2,11 +2,11 @@ module.exports = {
   roots: ['<rootDir>/src'],
   collectCoverageFrom: [
     '<rootDir>/src/**/*.ts',
-    '!<rootDir>/src/main/**',
+    '!<rootDir>/src/lambdas/*/*.ts',
     '!**/protocols/**',
     '!**/test/**',
-    '!<rootDir>/src/lambdas/**/presentation/errors/**',
-    '!<rootDir>/src/presentation/helpers/**'
+    '!<rootDir>/src/lambdas/**/presentation/**',
+    '!<rootDir>/src/lambdas/**/main/**'
   ],
   coverageDirectory: "coverage",
   testEnvironment: "node",

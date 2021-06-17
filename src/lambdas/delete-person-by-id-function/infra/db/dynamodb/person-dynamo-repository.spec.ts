@@ -37,7 +37,14 @@ describe('PersonDynamoRepository', () => {
       const personParams = mockPersonModel()
       await mockPersonRepository.addPerson(personParams)
       await sut.deleteById(personParams.id)
-      const deletedPerson = await sut.loadById(personParams.id)
+      const dbParams: DynamoDB.DocumentClient.GetItemInput = {
+        TableName: 'PersonsTable',
+        Key: {
+          id: personParams.id
+        }
+      }
+      const result: DynamoDB.DocumentClient.GetItemOutput = await docClient.get(dbParams).promise()
+      const deletedPerson = result.Item
       expect(deletedPerson).toBeFalsy()
     });
   });
