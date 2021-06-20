@@ -34,8 +34,12 @@ $ npm install -g typescript
 # Instale as dependências do projeto
 $ npm install
 
-# Se desejar, execute os testes unitários
-$ npm test
+# Se desejar, execute os testes unitários:
+  # Entre no diretório em que instalou o DynamoDB Local pela linha de comando e execute o comando
+  $ java -Djava.library.path=./DynamoDBLocal_lib -jar DynamoDBLocal.jar -sharedDb -inMemory
+
+  # Entre no diretório do projeto e execute o comando
+  $ npm test
 
 # Execute a aplicação
 $ npm run dev
@@ -44,24 +48,3 @@ $ npm run dev
 
 # Para testar e verificar a documentação das APIs com o Swagger, acesse <http://person-crud-swagger-bucket.s3-website-us-east-1.amazonaws.com>
 ```
-
-## Tecnologias utilizadas
-
-As seguintes tecnologias foram utilizadas no desenvolvimento do projeto:
-
-- [Node.js] -> Interpretador de código javascript para back-end.
-- [TypeScript] -> Transformar javascript em linguagem tipada e compilada.
-- [Express] -> Framework para criar APIs.
-- [MongoDB] -> Banco de dados.
-
-Outras dependências:
-
-- [jest] -> Framework de teste unitário.
-- [rimraf] -> Automatizar a exclusão da pasta onde é gerado o código compilado.
-- [git-commit-msg-linter] -> Padronizar as mensagens dos commits ao forçar o uso da especificação Conventional Commits.
-- [husky] -> Criar gatilho pré-commit para testar e garantir que o código a ser commitado é funcional.
-- [supertest] -> Forjar requisições.
-- [swagger-ui-express] -> Documentar e consumir as APIs.
-- [validator] -> Validar os parâmetros das requisições. Usado pra validar os e-mails
-- [cpf-cnpj-validator] -> Validar os CPFs fornecidos.
-- [migrate-mongo] -> Ferramenta de migração de banco de dados.
