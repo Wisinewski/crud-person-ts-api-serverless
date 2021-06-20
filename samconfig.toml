@@ -1,0 +1,10 @@
+version = 0.1
+[default]
+[default.deploy]
+[default.deploy.parameters]
+stack_name = "crud-person-serverless"
+s3_bucket = "aws-sam-cli-managed-default-samclisourcebucket-7taapxsl0ftq"
+s3_prefix = "crud-person-serverless"
+region = "us-east-1"
+confirm_changeset = true
+capabilities = "CAPABILITY_IAM"
