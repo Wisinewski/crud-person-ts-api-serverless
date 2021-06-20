@@ -2,9 +2,12 @@ openapi: 3.0.0
 info:
   title: crud-person-ts-api
   description: API para realizar CRUD de pessoas
-  version: 4.1.1
+  version: 5.0.0
 servers:
+- url: 'https://1cn8pz5hri.execute-api.us-east-1.amazonaws.com/Prod',
+  description: 'PROD'
 - url: 'http://127.0.0.1:3000'
+  description: 'DEV'
 tags:
   - name: Pessoa
 paths:
