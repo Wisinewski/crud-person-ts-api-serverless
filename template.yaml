@@ -1,0 +1,187 @@
+AWSTemplateFormatVersion: 2010-09-09
+Description: >-
+  crud-person-ts-api-serverless
+
+Transform:
+- AWS::Serverless-2016-10-31
+
+Globals:
+  Function:
+    Layers:
+      - !Ref SharedExternalDependencies
+  Api:
+    Cors:
+      AllowMethods: "'*'"
+      AllowHeaders: "'*'"
+      AllowOrigin: "'*'"
+      AllowCredentials: "'*'"
+
+Resources:
+  getByIdFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: dist/lambdas/load-person-by-id-function/
+      Handler: load-person-by-id-handler.handler
+      Runtime: nodejs12.x
+      MemorySize: 128
+      Timeout: 100
+      Description: HTTP get method to get one item by id from a DynamoDB table.
+      Policies:
+        - DynamoDBCrudPolicy:
+            TableName: !Ref PersonsTable
+      Environment:
+        Variables:
+          PERSONS_TABLE: !Ref PersonsTable
+      Events:
+        Api:
+          Type: Api
+          Properties:
+            Path: /persons/{id}
+            Method: GET
+
+  getByFilterFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: dist/lambdas/load-person-by-filter-function/
+      Handler: load-person-by-filter-handler.handler
+      Runtime: nodejs12.x
+      MemorySize: 128
+      Timeout: 100
+      Description: HTTP get method to get items by filter from a DynamoDB table.
+      Policies:
+        - DynamoDBCrudPolicy:
+            TableName: !Ref PersonsTable
+      Environment:
+        Variables:
+          PERSONS_TABLE: !Ref PersonsTable
+      Events:
+        Api:
+          Type: Api
+          Properties:
+            Path: /persons
+            Method: GET
+
+  deleteByIdFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: dist/lambdas/delete-person-by-id-function/
+      Handler: delete-person-by-id-handler.handler
+      Runtime: nodejs12.x
+      MemorySize: 128
+      Timeout: 100
+      Description: HTTP delete method to delete one item by id from a DynamoDB table.
+      Policies:
+        - DynamoDBCrudPolicy:
+            TableName: !Ref PersonsTable
+      Environment:
+        Variables:
+          PERSONS_TABLE: !Ref PersonsTable
+      Events:
+        Api:
+          Type: Api
+          Properties:
+            Path: /persons/{id}
+            Method: DELETE
+
+  putFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: dist/lambdas/add-person-function/
+      Handler: add-person-handler.handler
+      Runtime: nodejs12.x
+      MemorySize: 128
+      Timeout: 100
+      Description: HTTP post method to create one item in a DynamoDB table.
+      Policies:
+        - DynamoDBCrudPolicy:
+            TableName: !Ref PersonsTable
+      Environment:
+        Variables:
+          PERSONS_TABLE: !Ref PersonsTable
+      Events:
+        Api:
+          Type: Api
+          Properties:
+            Path: /persons
+            Method: POST
+
+  updateByIdFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: dist/lambdas/update-person-by-id-function/
+      Handler: update-person-by-id-handler.handler
+      Runtime: nodejs12.x
+      MemorySize: 128
+      Timeout: 100
+      Description: HTTP put method to update one item by id in a DynamoDB table.
+      Policies:
+        - DynamoDBCrudPolicy:
+            TableName: !Ref PersonsTable
+      Environment:
+        Variables:
+          PERSONS_TABLE: !Ref PersonsTable
+      Events:
+        Api:
+          Type: Api
+          Properties:
+            Path: /persons/{id}
+            Method: PUT
+
+  healthCheckFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: dist/lambdas/health-check-function/
+      Handler: health-check-handler.handler
+      Runtime: nodejs12.x
+      MemorySize: 128
+      Timeout: 100
+      Description: HTTP get method to health check app and dependencies.
+      Policies:
+        - DynamoDBCrudPolicy:
+            TableName: !Ref PersonsTable
+      Environment:
+        Variables:
+          PERSONS_TABLE: !Ref PersonsTable
+      Events:
+        Api:
+          Type: Api
+          Properties:
+            Path: /health
+            Method: GET
+
+  PersonsTable:
+    Type: AWS::Serverless::SimpleTable
+    Properties:
+      PrimaryKey:
+        Name: id
+        Type: String
+      ProvisionedThroughput:
+        ReadCapacityUnits: 2
+        WriteCapacityUnits: 2
+
+  SharedExternalDependencies:
+    Type: AWS::Serverless::LayerVersion
+    Metadata:
+      BuildMethod: nodejs12.x
+    Properties:
+      Description: External dependencies for Lambdas
+      ContentUri: dist/layers/shared-external-dependencies/
+      CompatibleRuntimes:
+        - nodejs12.x
+      RetentionPolicy: Retain
+
+  #RestApi:
+  #  Type: AWS:Serverless::Api
+  #  Properties:
+  #    Path: /docs
+  #    StageName: dev
+  #    DefinitionBody:
+  #      Fn::Transform:
+  #        Name: AWS::Include
+  #        Parameters:
+  #          Location: ./swagger.yaml
+
+Outputs:
+  WebEndpoint:
+    Description: "API Gateway endpoint URL for Prod stage"
+    Value: !Sub "https://${ServerlessRestApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/"

@@ -1,9 +1,23 @@
 {
   "compilerOptions": {
+    "sourceMap": true,
+    "moduleResolution": "node",
     "outDir": "./dist",
+    "rootDir": "./src",
     "module": "commonjs",
     "target": "ES2019",
     "esModuleInterop": true,
-    "allowJs": true
-  }
+    "allowJs": true,
+    "baseUrl": "src",
+    "resolveJsonModule": true
+  },
+  "include": [
+    "src",
+    "src/**/**/*.json"
+  ],
+  "exclude": [
+    "**/*.spec.ts",
+    "**/*.test.ts",
+    "**/test/**"
+  ]
 }

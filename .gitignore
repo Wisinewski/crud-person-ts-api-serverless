@@ -4,3 +4,4 @@ dist
 globalConfig.json
 coverage
 !src/data
+.aws-sam
