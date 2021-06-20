@@ -1,3 +1,5 @@
+import { DateValidation } from './../../../../validation/validators/date-validation';
+import { DateValidatorAdapter } from './../../../../infra/validators/date-validator-adapter';
 import { ValidationComposite } from './../../../../validation/validators/validation-composite';
 import { EmailValidatorAdapter } from './../../../../infra/validators/email-validator-adapter';
 import { EmailValidation } from './../../../../validation/validators/email-validation';
@@ -15,6 +17,7 @@ describe('UpdatePersonByIdValidationFactory', () => {
       validations.push(new RequiredFieldValidation(field))
     }
     validations.push(new EmailValidation('email', new EmailValidatorAdapter()))
+    validations.push(new DateValidation('dataNascimento', new DateValidatorAdapter()))
     expect(ValidationComposite).toHaveBeenCalledWith(validations)
   });
 });

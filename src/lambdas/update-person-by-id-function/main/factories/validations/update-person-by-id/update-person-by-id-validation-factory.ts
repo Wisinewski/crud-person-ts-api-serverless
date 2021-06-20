@@ -1,3 +1,5 @@
+import { DateValidation } from './../../../../validation/validators/date-validation';
+import { DateValidatorAdapter } from './../../../../infra/validators/date-validator-adapter';
 import { EmailValidatorAdapter } from './../../../../infra/validators/email-validator-adapter';
 import { EmailValidation } from './../../../../validation/validators/email-validation';
 import { RequiredFieldValidation } from './../../../../validation/validators/required-field-validation';
@@ -10,5 +12,6 @@ export const makeUpdatePersonByIdValidation = (): ValidationComposite => {
     validations.push(new RequiredFieldValidation(field))
   }
   validations.push(new EmailValidation('email', new EmailValidatorAdapter()))
+  validations.push(new DateValidation('dataNascimento', new DateValidatorAdapter()))
   return new ValidationComposite(validations)
 }
